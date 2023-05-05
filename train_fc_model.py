@@ -8,7 +8,7 @@ from trainers.fc_train import FCTrainer
 # 生成模拟数据
 input_size = 64
 hidden_size = 32
-output_size = 10
+output_size = 2
 
 x = torch.rand(100, input_size) 
 y = torch.randint(0, output_size, (100,))
