@@ -5,18 +5,22 @@ class grid_trainer(Trainer):
     def train_epoch(self):  
         self.model.train()
         self.model.to(self.device)
+        train_running_loss = 0.0
+        train_running_correct = 0
         for x, y in self.train_loader:
             x=x.to(self.device)
-            print("x:",x.shape)
             y=y.to(self.device)
-            print("y:",y.shape)
             outputs = self.model(x)
-            loss = self.loss_fn(outputs, y)
-            print(loss)
-            self.optimizer.zero_grad()
+            print(outputs)
+            print(y)
+            loss = self.loss_fn(outputs, y[0])
+            train_running_loss += loss.item()
+            # Calculate the accuracy.
+            _, preds = torch.max(outputs.data, 1)
+            train_running_correct += (preds == y).sum().item()
+            # Backpropagation
             loss.backward()
-            grad_norm = torch.nn.utils.clip_grad_norm_(self.model.parameters(),5)  
-            print(f'Gradient norm: {grad_norm}')
+            # Update the weights.
             self.optimizer.step()
     def validate(self):
         self.model.eval()
@@ -27,7 +31,7 @@ class grid_trainer(Trainer):
                 x=x.to(self.device)
                 y=y.to(self.device)
                 outputs = self.model(x)
-                loss = self.loss_fn(outputs, y)
+                loss = self.loss_fn(outputs, y[0])
                 val_loss += loss.item()
                 _, predicted = torch.max(outputs, 1)
                 val_acc += (predicted == y).sum().item()
