@@ -1,12 +1,12 @@
 import torch
 class Trainer:
-    def __init__(self, model, optimizer, loss_fn, train_loader, val_loader):
+    def __init__(self, model, optimizer, loss_fn, train_loader, val_loader,device):
         self.model = model
         self.optimizer = optimizer
         self.loss_fn = loss_fn
         self.train_loader = train_loader
         self.val_loader = val_loader
-        
+        self.device = device
     def train(self, epochs):
         for epoch in range(epochs):
             self.train_epoch()
