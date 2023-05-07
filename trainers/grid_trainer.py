@@ -31,17 +31,19 @@ class grid_trainer(Trainer):
         self.model.eval()
         val_loss = 0.
         val_acc = 0.
+        one_val_acc = 0.
         with torch.no_grad():
             for x, y in self.val_loader:
                 x=x.to(self.device)
                 y=y.to(self.device)
                 outputs = self.model(x)
                 loss = 0.0
+                count_a_sample=0
                 for i in range(0,self.model.grid_shape,2):
                     loss += self.loss_fn(outputs[:,i:i+2], y[:,i//2]) 
-                val_loss += loss.item()
-                _, predicted = torch.max(outputs, 1)
-                val_acc += (predicted == y).sum().item()
-        val_loss /= len(self.val_loader)
-        val_acc = val_acc / len(self.val_loader.dataset)
-        print(f'Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%')
+                    _, predicted = torch.max(outputs[:,i:i+2], 1)
+                    if y[:,i//2] == predicted:
+                        count_a_sample+=1
+                one_val_acc += count_a_sample / len(y[0])*100
+            val_acc = one_val_acc/100
+            print(f'Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%')
