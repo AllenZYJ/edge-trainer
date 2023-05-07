@@ -11,9 +11,11 @@ class grid_trainer(Trainer):
             x=x.to(self.device)
             y=y.to(self.device)
             outputs = self.model(x)
-            print(outputs)
-            print(y)
-            loss = self.loss_fn(outputs, y[0])
+            print(outputs.shape)
+            print(y.shape)
+            loss = 0.0
+            for i in range(0,self.model.grid_shape,2):
+                loss += self.loss_fn(outputs[:,i:i+2], y[:,i//2]) 
             train_running_loss += loss.item()
             # Calculate the accuracy.
             _, preds = torch.max(outputs.data, 1)
@@ -31,7 +33,9 @@ class grid_trainer(Trainer):
                 x=x.to(self.device)
                 y=y.to(self.device)
                 outputs = self.model(x)
-                loss = self.loss_fn(outputs, y[0])
+                loss = 0.0
+                for i in range(0,self.model.grid_shape,2):
+                    loss += self.loss_fn(outputs[:,i:i+2], y[:,i//2]) 
                 val_loss += loss.item()
                 _, predicted = torch.max(outputs, 1)
                 val_acc += (predicted == y).sum().item()
