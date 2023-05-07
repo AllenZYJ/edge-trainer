@@ -33,5 +33,5 @@ loss_fn = nn.CrossEntropyLoss()
 # 训练模型 
 from trainers.grid_trainer import grid_trainer
 trainer = grid_trainer(model, optimizer, loss_fn, train_loader, val_loader,device=device)
-trainer.train(50)
+trainer.train(5)
 trainer.validate()

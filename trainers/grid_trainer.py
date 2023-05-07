@@ -19,8 +19,6 @@ class grid_trainer(Trainer):
             loss = 0.0
             count_a_sample=0
             for index in range(len(outputs)):
-                print(outputs[index,0:2].unsqueeze(0))
-                print(y[index,0].unsqueeze(0))
                 for i in range(0,self.model.grid_shape,2):
                     loss += self.loss_fn(outputs[index,0:2].unsqueeze(0), y[index, i//2].unsqueeze(0)) 
                     _, predicted = torch.max(outputs[index,0:2].unsqueeze(0), 1)
@@ -73,5 +71,5 @@ class grid_trainer(Trainer):
                         if y[index,i//2] == predicted:
                             count_a_sample+=1
                     one_val_acc += count_a_sample / len(y[0])*100
-                val_acc += one_val_acc/len(self.val_loader)
-                print(f'Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%')
+            val_acc += one_val_acc/len(self.val_loader)/len(outputs)
+            print(f'Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%')
