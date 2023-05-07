@@ -17,13 +17,13 @@ random.seed(seed)
 input_size = 640
 output_size = 1080
 
-x = torch.rand(100, 3, input_size, input_size)  
-y = torch.randint(0,2,(100, 540))
+x = torch.rand(10, 3, input_size, input_size)  
+y = torch.randint(0,2,(10, 540))
 # 定义数据集
 dataset = torch.utils.data.TensorDataset(x, y)
 # 定义数据加载器
-train_loader = DataLoader(dataset, batch_size=1, shuffle=True)
-val_loader = DataLoader(dataset, batch_size=1)
+train_loader = DataLoader(dataset, batch_size=2, shuffle=True)
+val_loader = DataLoader(dataset, batch_size=2)
 # 模型,优化器和损失函数
 # model = gridnet(batchsize=1)
 model = ResNet(img_channels=3, num_layers=18, block=BasicBlock, num_classes=1080)
