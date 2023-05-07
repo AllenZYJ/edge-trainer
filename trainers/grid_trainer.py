@@ -1,18 +1,19 @@
 import torch
 from torch import nn
 from trainers.trainer import Trainer
+from tqdm import tqdm
 class grid_trainer(Trainer):
     def train_epoch(self):  
         self.model.train()
         self.model.to(self.device)
         train_running_loss = 0.0
         train_running_correct = 0
-        for x, y in self.train_loader:
+        pbar = tqdm(self.train_loader)
+        pbar.set_description('Training')
+        for x, y in pbar:
             x=x.to(self.device)
             y=y.to(self.device)
             outputs = self.model(x)
-            print(outputs.shape)
-            print(y.shape)
             loss = 0.0
             for i in range(0,self.model.grid_shape,2):
                 loss += self.loss_fn(outputs[:,i:i+2], y[:,i//2]) 
@@ -24,6 +25,8 @@ class grid_trainer(Trainer):
             loss.backward()
             # Update the weights.
             self.optimizer.step()
+        print("loss:",loss)
+         
     def validate(self):
         self.model.eval()
         val_loss = 0.
