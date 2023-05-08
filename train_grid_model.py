@@ -28,7 +28,7 @@ val_loader = DataLoader(dataset, batch_size=32)
 # 模型,优化器和损失函数
 # model = gridnet(batchsize=1)
 model = ResNet(img_channels=3, num_layers=18, block=BasicBlock, grid_shape=20)
-optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
 
 loss_fn = nn.CrossEntropyLoss()
 # 训练模型 
