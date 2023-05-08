@@ -17,16 +17,17 @@ random.seed(seed)
 input_size = 640
 output_size = 1080
 
-x = torch.rand(10, 3, input_size, input_size)  
-y = torch.randint(0,2,(10, 540))
+x = torch.rand(1000, 3, input_size, input_size)  
+y = torch.randint(0,2,(1000,1,20,20))
+print(y[1,:,1,1])
 # 定义数据集
 dataset = torch.utils.data.TensorDataset(x, y)
 # 定义数据加载器
-train_loader = DataLoader(dataset, batch_size=2, shuffle=True)
-val_loader = DataLoader(dataset, batch_size=2)
+train_loader = DataLoader(dataset, batch_size=32, shuffle=True)
+val_loader = DataLoader(dataset, batch_size=32)
 # 模型,优化器和损失函数
 # model = gridnet(batchsize=1)
-model = ResNet(img_channels=3, num_layers=18, block=BasicBlock, num_classes=1080)
+model = ResNet(img_channels=3, num_layers=18, block=BasicBlock, grid_shape=20)
 optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
 loss_fn = nn.CrossEntropyLoss()
@@ -34,4 +35,4 @@ loss_fn = nn.CrossEntropyLoss()
 from trainers.grid_trainer import grid_trainer
 trainer = grid_trainer(model, optimizer, loss_fn, train_loader, val_loader,device=device)
 trainer.train(50)
-trainer.validate()
+# trainer.validate()

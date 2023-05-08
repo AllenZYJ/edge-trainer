@@ -71,7 +71,7 @@ class ResNet(nn.Module):
         img_channels: int,
         num_layers: int,
         block: Type[BasicBlock],
-        num_classes: int  = 1000
+        grid_shape: int  = 20
     ) -> None:
         super(ResNet, self).__init__()
         if num_layers == 18:
@@ -102,8 +102,8 @@ class ResNet(nn.Module):
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
 
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(512*self.expansion, num_classes)
-        self.grid_shape = num_classes
+        self.conv30x18 = nn.Conv2d(512, 2, kernel_size=1, stride=1, padding=0)
+        self.grid_shape = 20
     def _make_layer(
         self, 
         block: Type[BasicBlock],
@@ -155,12 +155,13 @@ class ResNet(nn.Module):
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
+        x = self.conv30x18(x)
         # The spatial dimension of the final layer's feature 
         # map should be (7, 7) for all ResNets.
-        x = self.avgpool(x)
-        x = torch.flatten(x, 1)
-        x = self.fc(x)
-        x = self.relu(x)
+        # x = self.avgpool(x)
+        # x = torch.flatten(x, 1)
+        # x = self.fc(x)
+        # x = self.relu(x)
         return x
 
 if __name__ == '__main__':

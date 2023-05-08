@@ -15,23 +15,21 @@ class grid_trainer(Trainer):
             x=x.to(self.device)
             y=y.to(self.device)
             outputs = self.model(x)
-            print("output:",outputs)
             loss = 0.0
             count_a_sample=0
             for index in range(len(outputs)):
-                for i in range(0,self.model.grid_shape,2):
-                    loss += self.loss_fn(outputs[index,0:2].unsqueeze(0), y[index, i//2].unsqueeze(0)) 
-                    _, predicted = torch.max(outputs[index,0:2].unsqueeze(0), 1)
-                    if y[index,i//2] == predicted:
-                        count_a_sample+=1
-                    one_train_acc += count_a_sample / len(y[0])*100
-                train_running_loss += loss.item()
-                _, preds = torch.max(outputs.data, 1)
-            # Backpropagation
+                for h_index in range(0,self.model.grid_shape):
+                    for w_index in range(0,self.model.grid_shape):
+                        loss += self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
+                        _, predicted = torch.max(outputs[index,:,h_index,w_index].unsqueeze(0), 1)
+                        if y[index,:,h_index,w_index] == predicted:
+                            count_a_sample+=1
+            loss/=(self.model.grid_shape*self.model.grid_shape*len(y))
+            print(f'Train Loss: {loss:.4f}')
+            one_train_acc += count_a_sample / (self.model.grid_shape*self.model.grid_shape*len(y))*100# 单个样本准确率
             loss.backward() 
-            # Update the weights.
             self.optimizer.step()
-        print(loss)
+        # print("one_train_acc:",one_train_acc/10)
         # tensor([[0.1433, 0.0000]], device='cuda:0', grad_fn=<SliceBackward>)
         # tensor([1], device='cuda:0')
 
@@ -65,11 +63,15 @@ class grid_trainer(Trainer):
                 loss = 0.0
                 count_a_sample=0
                 for index in range(len(outputs)):
-                    for i in range(0,self.model.grid_shape,2):
-                        loss += self.loss_fn(outputs[index,0:2].unsqueeze(0), y[index, i//2].unsqueeze(0)) 
-                        _, predicted = torch.max(outputs[index,0:2].unsqueeze(0), 1)
-                        if y[index,i//2] == predicted:
-                            count_a_sample+=1
-                    one_val_acc += count_a_sample / len(y[0])*100
-            val_acc += one_val_acc/len(self.val_loader)/len(outputs)
+                    for h_index in range(0,self.model.grid_shape):
+                        for w_index in range(0,self.model.grid_shape):
+                            loss += self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
+                            _, predicted = torch.max(outputs[index,:,h_index,w_index].unsqueeze(0), 1)
+                            if y[index,:,h_index,w_index] == predicted:
+                                count_a_sample+=1
+                val_loss += loss
+            #     # Backpropagation
+            one_val_acc += count_a_sample / (self.model.grid_shape*self.model.grid_shape*len(y))*100
+            val_acc += one_val_acc/len(self.val_loader)
             print(f'Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%')
+            
