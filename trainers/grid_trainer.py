@@ -15,7 +15,7 @@ class grid_trainer(Trainer):
             x=x.to(self.device)
             y=y.to(self.device)
             outputs = self.model(x)
-            print(outputs.shape)
+            print("output:",outputs)
             loss = 0.0
             count_a_sample=0
             for index in range(len(outputs)):
@@ -28,9 +28,10 @@ class grid_trainer(Trainer):
                 train_running_loss += loss.item()
                 _, preds = torch.max(outputs.data, 1)
             # Backpropagation
-            loss.backward()
+            loss.backward() 
             # Update the weights.
             self.optimizer.step()
+        print(loss)
         # tensor([[0.1433, 0.0000]], device='cuda:0', grad_fn=<SliceBackward>)
         # tensor([1], device='cuda:0')
 
@@ -51,7 +52,6 @@ class grid_trainer(Trainer):
         #     loss.backward()
         #     # Update the weights.
         #     self.optimizer.step()
-        print("loss:",loss)
     def validate(self):
         self.model.eval()
         val_loss = 0.
