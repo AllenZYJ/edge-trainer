@@ -29,6 +29,7 @@ class grid_trainer(Trainer):
             one_train_acc += count_a_sample / (self.model.grid_shape*self.model.grid_shape*len(y))*100# 单个样本准确率
             loss.backward() 
             self.optimizer.step()
+            self.optimizer.zero_grad()
         # print("one_train_acc:",one_train_acc/10)
         # tensor([[0.1433, 0.0000]], device='cuda:0', grad_fn=<SliceBackward>)
         # tensor([1], device='cuda:0')

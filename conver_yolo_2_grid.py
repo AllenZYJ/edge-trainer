@@ -30,22 +30,25 @@ def generate_label(json_file):
         grid_y = int(y_center / (height / num_grid))
         labels[grid_y * num_grid + grid_x] = 1  # 将对应格子标记为1
     return labels
-def generate_label_batch(folder_path):
-    label_files = os.listdir(folder_path)
+def generate_label_batch(label_path):
+    label_files = [f for f in os.listdir(label_path) if f.endswith('.json')]
     labels_batch = []
-    for filename in tqdm(label_files[:10]):
+    for filename in tqdm(label_files[:]):
         if filename.endswith('.json'):
-            print(filename.replace('.json', '.jpg'))
-            if os.path.exists(os.path.join(folder_path,filename.replace('.json', '.jpg'))):
+            if os.path.exists(os.path.join(label_path,filename.replace('.json', '.jpg'))):
                 img_file = filename.replace('.json', '.jpg')
-                shutil.copy(os.path.join(folder_path, img_file), "./data/labels")
-            elif os.path.exists(os.path.join(folder_path,filename.replace('.json', '.png'))):
+                shutil.copy(os.path.join(label_path, img_file), "./data/images")
+                labels = generate_label(os.path.join(label_path, filename))
+            elif os.path.exists(os.path.join(label_path,filename.replace('.json', '.png'))):
                 img_file = filename.replace('.json', '.png')
-                shutil.copy(os.path.join(folder_path, img_file), "./data/labels")
-            elif os.path.exists(os.path.join(folder_path,filename.replace('.json', '.jpeg'))):
-                img_file = filename.replace('.json', '.jpeg')
-                shutil.copy(os.path.join(folder_path, img_file), "./data/labels")
-            labels = generate_label(os.path.join(folder_path, filename))
+                shutil.copy(os.path.join(label_path, img_file), "./data/images")
+                labels = generate_label(os.path.join(label_path, filename))
+            elif os.path.exists(os.path.join(label_path,filename.replace('.json', '.jpeg'))):
+                continue
+                # img_file = filename.replace('.json', '.jpeg')
+                # print("jpeg",img_file)
+                # shutil.copy(os.path.join(label_path, img_file), "./data/images")
+                # labels = generate_label(os.path.join(label_path, filename))
         with open(os.path.join("./data/labels", filename[:-4]+"txt"), 'w') as f:
             for label in labels:
                 f.write(str(label) + ' ')
