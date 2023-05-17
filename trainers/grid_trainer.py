@@ -1,9 +1,15 @@
 import torch
 from torch import nn
 from trainers.trainer import Trainer
+from log.edge_log import Logger
 from tqdm import tqdm
+import time
+logger = Logger('logs/')
+log_name = "training"
+logger.create_log_file(log_name)
 class grid_trainer(Trainer):
     def train_epoch(self):  
+
         self.model.train()
         self.model.to(self.device)
         train_running_loss = 0.0
@@ -25,7 +31,7 @@ class grid_trainer(Trainer):
                         if y[index,:,h_index,w_index] == predicted:
                             count_a_sample+=1
             loss/=(self.model.grid_shape*self.model.grid_shape*len(y))
-            print(f'Train Loss: {loss:.4f}')
+            logger.write_log(log_name, f'Train Loss: {loss:.4f}')
             one_train_acc += count_a_sample / (self.model.grid_shape*self.model.grid_shape*len(y))*100# 单个样本准确率
             loss.backward() 
             self.optimizer.step()
@@ -74,5 +80,5 @@ class grid_trainer(Trainer):
             #     # Backpropagation
                 one_acc_batch = count_a_sample/(self.model.grid_shape*self.model.grid_shape*len(y))
                 one_val_acc += one_acc_batch
-        val_acc = one_val_acc/len(self.val_loader)
+        val_acc = one_val_acc/len(self.val_loader)*100
         print(f'Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%')
