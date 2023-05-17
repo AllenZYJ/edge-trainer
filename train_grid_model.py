@@ -22,7 +22,7 @@ random.seed(seed)
 input_size = 640
 output_size = 1080
 
-transform = transforms.Compose([transforms.ToTensor(),transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])])
+transform = transforms.Compose([transforms.ToTensor()])
 dataset = GridDataset('./data/images/','./data/labels/', transform)
 
 x = [] 
@@ -42,8 +42,8 @@ print("y:",y.size()) # torch.Size([N, 1, 20, 20])
 # 定义数据集
 dataset = torch.utils.data.TensorDataset(x, y)
 # 定义数据加载器
-train_loader = DataLoader(dataset, batch_size=96, shuffle=True)
-val_loader = DataLoader(dataset, batch_size=96)
+train_loader = DataLoader(dataset, batch_size=2, shuffle=True)
+val_loader = DataLoader(dataset, batch_size=2)
 # 模型,优化器和损失函数
 # model = gridnet(batchsize=1)
 model = ResNet(img_channels=3, num_layers=18, block=BasicBlock, grid_shape=20)

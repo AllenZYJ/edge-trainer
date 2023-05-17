@@ -161,7 +161,7 @@ class ResNet(nn.Module):
         # x = self.avgpool(x)
         # x = torch.flatten(x, 1)
         # x = self.fc(x)
-        # x = self.relu(x)
+        x = self.relu(x)
         return x
 
 if __name__ == '__main__':

@@ -9,7 +9,7 @@ class GridDataset(Dataset):
         self.img_dir = img_dir
         self.label_dir = label_dir
         self.transform = transform
-        self.images = os.listdir(img_dir)
+        self.images = os.listdir(img_dir)[:10]
         self.labels = {img_name: img_name[:-3]+'txt'
                       for img_name in self.images}
 

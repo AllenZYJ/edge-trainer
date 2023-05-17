@@ -72,7 +72,7 @@ class grid_trainer(Trainer):
                                 count_a_sample+=1
                 val_loss += loss
             #     # Backpropagation
-            one_val_acc += count_a_sample / (self.model.grid_shape*self.model.grid_shape*len(y))*100
-            val_acc += one_val_acc/len(self.val_loader)
-            print(f'Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%')
-            
+                one_acc_batch = count_a_sample/(self.model.grid_shape*self.model.grid_shape*len(y))
+                one_val_acc += one_acc_batch
+        val_acc = one_val_acc/len(self.val_loader)
+        print(f'Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%')
