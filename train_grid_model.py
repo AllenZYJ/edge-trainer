@@ -43,8 +43,8 @@ def main():
     # 定义数据集
     dataset = torch.utils.data.TensorDataset(x, y)
     # 定义数据加载器
-    train_loader = DataLoader(dataset, batch_size=2, shuffle=True)
-    val_loader = DataLoader(dataset, batch_size=2)
+    train_loader = DataLoader(dataset, batch_size=48, shuffle=True)
+    val_loader = DataLoader(dataset, batch_size=48)
     # 模型,优化器和损失函数
     # model = gridnet(batchsize=1)
     model = ResNet(img_channels=3, num_layers=18, block=BasicBlock, grid_shape=20)
@@ -53,17 +53,17 @@ def main():
     # 训练模型 
     from trainers.grid_trainer import grid_trainer
     trainer = grid_trainer(model, optimizer, loss_fn, train_loader, val_loader,device=device)
-    trainer.train(1)
-    torch.save(model, './models/exp/last.pt')
-    # trainer.validate()
-    model = torch.load('./models/exp/last.pt')
-    for x, y in train_loader:
-        x=x.to(device)
-        y=y.to(device)
-        outputs = model(x)
-        loss = 0.0
-        count_a_sample=0
-        print(outputs.shape)
+    trainer.train(50)
+    trainer.validate()
+    torch.save(model, './models/exp/2023-05-17-last.pt')
+    # model = torch.load('./models/exp/last.pt')
+    # for x, y in train_loader:
+    #     x=x.to(device)
+    #     y=y.to(device)
+    #     outputs = model(x)
+    #     loss = 0.0
+    #     count_a_sample=0
+    #     print(outputs.shape)
 
 if __name__ == '__main__':
     main()

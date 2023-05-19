@@ -55,8 +55,7 @@ class grid_trainer(Trainer):
         #     train_running_correct += (preds == y).sum().item()
         #     # Backpropagation
         #     loss.backward()
-        #     # Update the weights.
-        #     self.optimizer.step()
+        #     # Update the weights.]\       #     self.optimizer.step()
     def validate(self):
         self.model.eval()
         val_loss = 0.
@@ -81,4 +80,5 @@ class grid_trainer(Trainer):
                 one_acc_batch = count_a_sample/(self.model.grid_shape*self.model.grid_shape*len(y))
                 one_val_acc += one_acc_batch
         val_acc = one_val_acc/len(self.val_loader)*100
+        logger.write_log(log_name, f'Val Acc: {val_acc:.2f}%')
         print(f'Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%')
