@@ -12,5 +12,9 @@ print(x.size())
 model = torch.load('./models/exp/last.pt')
 outputs = model(x)
 output = outputs.cpu().detach().numpy()
-print(output[0][1])
-print(output[0][0])
+for index in range(len(outputs)):
+    for h_index in range(0,20):
+        for w_index in range(0,20):
+            print(outputs[index,:,h_index,w_index].unsqueeze(0))
+            _, predicted = torch.max(outputs[index,:,h_index,w_index].unsqueeze(0), 1)
+            print(predicted)
