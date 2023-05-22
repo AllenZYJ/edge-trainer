@@ -43,8 +43,8 @@ def main():
     # 定义数据集
     dataset = torch.utils.data.TensorDataset(x, y)
     # 定义数据加载器
-    train_loader = DataLoader(dataset, batch_size=48, shuffle=True)
-    val_loader = DataLoader(dataset, batch_size=48)
+    train_loader = DataLoader(dataset, batch_size=4, shuffle=True)
+    val_loader = DataLoader(dataset, batch_size=4)
     # 模型,优化器和损失函数
     # model = gridnet(batchsize=1)
     model = ResNet(img_channels=3, num_layers=18, block=BasicBlock, grid_shape=20)

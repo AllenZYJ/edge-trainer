@@ -17,25 +17,31 @@ class grid_trainer(Trainer):
         pbar = tqdm(self.train_loader)
         pbar.set_description('Training')
         one_train_acc = 0.
+        loss = 0.0
         for x, y in pbar:
             x=x.to(self.device)
             y=y.to(self.device)
             outputs = self.model(x)
-            loss = 0.0
+            logger.write_log(log_name, f'output : {outputs}')
+
             count_a_sample=0
             for index in range(len(outputs)):
                 for h_index in range(0,self.model.grid_shape):
                     for w_index in range(0,self.model.grid_shape):
-                        loss += self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
+                        if  y[index,:,h_index,w_index] == 1: 
+                            loss += 0.99*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
+                            logger.write_log(log_name, f'1 Loss: {5*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]):.4f}')
+                        else:
+                            loss += 0.1*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
                         _, predicted = torch.max(outputs[index,:,h_index,w_index].unsqueeze(0), 1)
                         if y[index,:,h_index,w_index] == predicted:
                             count_a_sample+=1
-            loss/=(self.model.grid_shape*self.model.grid_shape*len(y))
-            logger.write_log(log_name, f'Train Loss: {loss:.4f}')
-            one_train_acc += count_a_sample / (self.model.grid_shape*self.model.grid_shape*len(y))*100# 单个样本准确率
-            loss.backward() 
-            self.optimizer.step()
-            self.optimizer.zero_grad()
+            # loss/=(self.model.grid_shape*self.model.grid_shape*len(y))
+        logger.write_log(log_name, f'Train Loss: {loss:.4f}')
+        one_train_acc += count_a_sample / (self.model.grid_shape*self.model.grid_shape*len(y))*100# 单个样本准确率
+        loss.backward() 
+        self.optimizer.step()
+        self.optimizer.zero_grad()
         # print("one_train_acc:",one_train_acc/10)
         # tensor([[0.1433, 0.0000]], device='cuda:0', grad_fn=<SliceBackward>)
         # tensor([1], device='cuda:0')

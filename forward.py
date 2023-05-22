@@ -9,7 +9,7 @@ img = img / 255.0
 x = torch.from_numpy(img).float().unsqueeze(0).to(device)
 x = x.transpose(1, 3)  
 print(x.size())
-model = torch.load('./models/exp/last.pt')
+model = torch.load('./models/exp/2023-05-17-last.pt')
 outputs = model(x)
 output = outputs.cpu().detach().numpy()
 for index in range(len(outputs)):
