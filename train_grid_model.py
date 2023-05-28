@@ -23,7 +23,9 @@ random.seed(seed)
 # 生成模拟数据
 input_size = 640
 output_size = 1080
+batchsize = 32
 def main():
+    print(batchsize)
     transform = transforms.Compose([transforms.ToTensor()])
     dataset = GridDataset('./data/images/','./data/labels/', transform)
     x = [] 
@@ -43,10 +45,9 @@ def main():
     # 定义数据集
     dataset = torch.utils.data.TensorDataset(x, y)
     # 定义数据加载器
-    train_loader = DataLoader(dataset, batch_size=4, shuffle=True)
-    val_loader = DataLoader(dataset, batch_size=4)
+    train_loader = DataLoader(dataset, batch_size=batchsize, shuffle=True)
+    val_loader = DataLoader(dataset, batch_size=batchsize)
     # 模型,优化器和损失函数
-    # model = gridnet(batchsize=1)
     model = ResNet(img_channels=3, num_layers=18, block=BasicBlock, grid_shape=20)
     optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
     loss_fn = nn.CrossEntropyLoss()
@@ -56,14 +57,7 @@ def main():
     trainer.train(50)
     trainer.validate()
     torch.save(model, './models/exp/2023-05-17-last.pt')
-    # model = torch.load('./models/exp/last.pt')
-    # for x, y in train_loader:
-    #     x=x.to(device)
-    #     y=y.to(device)
-    #     outputs = model(x)
-    #     loss = 0.0
-    #     count_a_sample=0
-    #     print(outputs.shape)
+
 
 if __name__ == '__main__':
     main()
