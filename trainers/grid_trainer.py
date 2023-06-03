@@ -28,10 +28,10 @@ class grid_trainer(Trainer):
                 for h_index in range(0,self.model.grid_shape):
                     for w_index in range(0,self.model.grid_shape):
                         if  y[index,:,h_index,w_index] == 1: 
-                            loss += 0.99*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
+                            loss += 0.7*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
                             logger.write_log(log_name, f'1 Loss: {5*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]):.4f}')
                         else:
-                            loss += 0.1*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
+                            loss += 0.3*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
                         _, predicted = torch.max(outputs[index,:,h_index,w_index].unsqueeze(0), 1)
                         if y[index,:,h_index,w_index] == predicted:
                             count_a_sample+=1
