@@ -9,7 +9,6 @@ log_name = "training"
 logger.create_log_file(log_name)
 class grid_trainer(Trainer):
     def train_epoch(self):  
-
         self.model.train()
         self.model.to(self.device)
         train_running_loss = 0.0
@@ -24,23 +23,27 @@ class grid_trainer(Trainer):
             outputs = self.model(x)
             logger.write_log(log_name, f'output : {outputs}')
             count_a_sample=0
+            total_posi = 0
             for index in range(len(outputs)):
                 for h_index in range(0,self.model.grid_shape):
                     for w_index in range(0,self.model.grid_shape):
                         if  y[index,:,h_index,w_index] == 1: 
+                            total_posi+=1
+                            print(y[index,:,h_index,w_index])
                             loss += 0.7*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
                             logger.write_log(log_name, f'1 Loss: {5*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]):.4f}')
                         else:
                             loss += 0.3*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
                         _, predicted = torch.max(outputs[index,:,h_index,w_index].unsqueeze(0), 1)
-                        if y[index,:,h_index,w_index] == predicted:
+                        if y[index,:,h_index,w_index] == predicted and y[index,:,h_index,w_index] == 1:
                             count_a_sample+=1
             # loss/=(self.model.grid_shape*self.model.grid_shape*len(y))
             logger.write_log(log_name, f'Train Loss: {loss:.4f}')
-            one_train_acc += count_a_sample / (self.model.grid_shape*self.model.grid_shape*len(y))*100# 单个样本准确率
-            loss.backward() 
+            one_train_acc += count_a_sample / total_posi# 单个样本准确率
+            loss.backward()
+            print(total_posi)
             self.optimizer.step()
-            # self.optimizer.zero_grad()
+            self.optimizer.zero_grad()
     def validate(self):
         self.model.eval()
         val_loss = 0.
@@ -61,7 +64,6 @@ class grid_trainer(Trainer):
                             if y[index,:,h_index,w_index] == predicted:
                                 count_a_sample+=1
                 val_loss += loss
-            #     # Backpropagation
                 one_acc_batch = count_a_sample/(self.model.grid_shape*self.model.grid_shape*len(y))
                 one_val_acc += one_acc_batch
         val_acc = one_val_acc/len(self.val_loader)*100

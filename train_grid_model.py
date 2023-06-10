@@ -26,37 +26,35 @@ random.seed(seed)
 input_size = 640
 output_size = 1080
 batchsize = 32
-cache = False
+nocache = False
 def main():
     print(batchsize)
     transform = transforms.Compose([transforms.ToTensor()])
     dataset = GridDataset('./data/images/','./data/labels/', transform)
     x = [] 
-    pbar = tqdm(range(len(dataset)))
-    pbar.set_description('Scaning')
-    if cache:
+    if nocache:
+        pbar = tqdm(range(len(dataset)))
+        pbar.set_description('Scaning')
         for i in pbar:   
             x.append(dataset[i][0])
         x = torch.stack(x, dim=0)
-        print("x:",x.size()) # torch.Size([N, 3, 640, 640])
         with open('./data/x_all.pkl', 'wb') as f:
             pickle5.dump(x, f)
         y=[]
         for image, label in dataset: 
             y.append(label.unsqueeze(0))
         y = torch.cat(y, dim=0).unsqueeze(1)
-        print("y:",y.size()) # torch.Size([N, 1, 20, 20])
         with open('./data/y_all.pkl', 'wb') as f:
             pickle5.dump(y, f)
     else:
+        print("load dataset from cache...")
         with open('./data/x_all.pkl', 'rb') as f:
             x = pickle5.load(f)
         with open('./data/y_all.pkl', 'rb') as f:
             y = pickle5.load(f)
-    print("x:",type(x)) # torch.Size([N, 3, 640, 640])
+    print("x:",type(x)) 
+    print("y:",y.size())
     print("x:",x.size()) # torch.Size([N, 3, 640, 640])
-    # x = torch.rand(1000, 3, input_size, input_size)  
-    # y = torch.randint(0,2,(1000,1,20,20))
     # 定义数据集
     dataset = torch.utils.data.TensorDataset(x, y)
     # 定义数据加载器
