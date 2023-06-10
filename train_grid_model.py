@@ -26,7 +26,7 @@ random.seed(seed)
 input_size = 640
 output_size = 1080
 batchsize = 32
-nocache = False
+nocache = True
 def main():
     print(batchsize)
     transform = transforms.Compose([transforms.ToTensor()])

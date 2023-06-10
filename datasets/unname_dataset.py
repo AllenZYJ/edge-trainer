@@ -4,12 +4,13 @@ from torch.utils.data import Dataset
 from torchvision import transforms
 from tqdm import tqdm
 from PIL import Image
+import cv2
 class GridDataset(Dataset):
     def __init__(self, img_dir, label_dir,transform=None):
         self.img_dir = img_dir
         self.label_dir = label_dir
         self.transform = transform
-        self.images = os.listdir(img_dir)[:]
+        self.images = os.listdir(img_dir)[:10]
         self.labels = {img_name: img_name[:-3]+'txt'
                       for img_name in self.images}
     def __len__(self):
@@ -22,9 +23,9 @@ class GridDataset(Dataset):
         label = label.read().split()
         label = torch.tensor(list(map(int, label)))
         label = label.view(20, 20)
-        image = Image.open(img_path)
-        image = image.resize((640, 640))
-        image = image.convert('RGB')  # Color convert
+        print(img_path)
+        image = cv2.imread(img_path)
+        image = cv2.resize(image,(640, 640))/255.0
         if self.transform:
             image = self.transform(image)
-        return image,label
+        return image.float(),label

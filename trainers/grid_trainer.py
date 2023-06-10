@@ -21,6 +21,7 @@ class grid_trainer(Trainer):
             x=x.to(self.device)
             y=y.to(self.device)
             outputs = self.model(x)
+            print(x)
             logger.write_log(log_name, f'output : {outputs}')
             count_a_sample=0
             total_posi = 0
@@ -29,17 +30,18 @@ class grid_trainer(Trainer):
                     for w_index in range(0,self.model.grid_shape):
                         if  y[index,:,h_index,w_index] == 1: 
                             total_posi+=1
-                            print(y[index,:,h_index,w_index])
-                            loss += 0.7*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
+                            loss += 0.007*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
                             logger.write_log(log_name, f'1 Loss: {5*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]):.4f}')
                         else:
-                            loss += 0.3*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
+                            loss += 0.003*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
                         _, predicted = torch.max(outputs[index,:,h_index,w_index].unsqueeze(0), 1)
+                        print(predicted)
                         if y[index,:,h_index,w_index] == predicted and y[index,:,h_index,w_index] == 1:
                             count_a_sample+=1
-            # loss/=(self.model.grid_shape*self.model.grid_shape*len(y))
+            loss/=total_posi
             logger.write_log(log_name, f'Train Loss: {loss:.4f}')
             one_train_acc += count_a_sample / total_posi# 单个样本准确率
+            logger.write_log(log_name, f'one_train_acc: {one_train_acc:.4f}')
             loss.backward()
             print(total_posi)
             self.optimizer.step()
