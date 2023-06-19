@@ -1,4 +1,5 @@
 import torch
+
 class Trainer:
     def __init__(self, model, optimizer, loss_fn, train_loader, val_loader,device):
         self.model = model
@@ -9,8 +10,9 @@ class Trainer:
         self.device = device
     def train(self, epochs):
         for epoch in range(epochs):
+            print(f'Epochs: {epoch}') 
             self.train_epoch()
-            self.validate()
+            # self.validate()
             
     def train_epoch(self):
         self.model.train()

@@ -10,7 +10,7 @@ class GridDataset(Dataset):
         self.img_dir = img_dir
         self.label_dir = label_dir
         self.transform = transform
-        self.images = os.listdir(img_dir)[:10]
+        self.images = os.listdir(img_dir)[:]
         self.labels = {img_name: img_name[:-3]+'txt'
                       for img_name in self.images}
     def __len__(self):
@@ -23,7 +23,6 @@ class GridDataset(Dataset):
         label = label.read().split()
         label = torch.tensor(list(map(int, label)))
         label = label.view(20, 20)
-        print(img_path)
         image = cv2.imread(img_path)
         image = cv2.resize(image,(640, 640))/255.0
         if self.transform:

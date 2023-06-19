@@ -13,7 +13,7 @@ from log.edge_log import Logger
 from tqdm import tqdm
 import pickle5
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 # Set seed.
 seed = 42
 torch.manual_seed(seed)
@@ -26,26 +26,29 @@ random.seed(seed)
 input_size = 640
 output_size = 1080
 batchsize = 32
-nocache = True
+usenocache = False
+save_flash = False
 def main():
     print(batchsize)
     transform = transforms.Compose([transforms.ToTensor()])
     dataset = GridDataset('./data/images/','./data/labels/', transform)
     x = [] 
-    if nocache:
+    if usenocache:
         pbar = tqdm(range(len(dataset)))
         pbar.set_description('Scaning')
         for i in pbar:   
             x.append(dataset[i][0])
         x = torch.stack(x, dim=0)
-        with open('./data/x_all.pkl', 'wb') as f:
-            pickle5.dump(x, f)
+        if save_flash:
+            with open('./data/x_all.pkl', 'wb') as f:
+                pickle5.dump(x, f)
         y=[]
         for image, label in dataset: 
             y.append(label.unsqueeze(0))
         y = torch.cat(y, dim=0).unsqueeze(1)
-        with open('./data/y_all.pkl', 'wb') as f:
-            pickle5.dump(y, f)
+        if save_flash:
+            with open('./data/y_all.pkl', 'wb') as f:
+                pickle5.dump(y, f)
     else:
         print("load dataset from cache...")
         with open('./data/x_all.pkl', 'rb') as f:
@@ -67,9 +70,9 @@ def main():
     # 训练模型 
     from trainers.grid_trainer import grid_trainer
     trainer = grid_trainer(model, optimizer, loss_fn, train_loader, val_loader,device=device)
-    trainer.train(50)
+    trainer.train(10)
     trainer.validate()
-    torch.save(model, './models/exp/2023-05-17-last.pt')
+    torch.save(model, './models/exp/20230618.pt')
 
 
 if __name__ == '__main__':

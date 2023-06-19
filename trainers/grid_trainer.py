@@ -8,43 +8,44 @@ logger = Logger('logs/')
 log_name = "training"
 logger.create_log_file(log_name)
 class grid_trainer(Trainer):
-    def train_epoch(self):  
-        self.model.train()
-        self.model.to(self.device)
-        train_running_loss = 0.0
-        train_running_correct = 0
-        pbar = tqdm(self.train_loader)
-        pbar.set_description('Training')
-        one_train_acc = 0.
-        for x, y in pbar:
-            loss = 0.0
-            x=x.to(self.device)
+    def train_epoch(self): 
+        self.model.train() 
+        self.model.to(self.device)  
+        train_running_loss = 0.0  
+        train_running_correct = 0 
+        pbar = tqdm(self.train_loader) 
+        pbar.set_description('Training') 
+        one_train_acc = 0. 
+        for x, y in pbar: 
+            loss = 0.0 
+            x=x.to(self.device) 
             y=y.to(self.device)
-            outputs = self.model(x)
-            print(x)
-            logger.write_log(log_name, f'output : {outputs}')
+            # logger.write_log(log_name, f'x: {x}') 
+            # logger.write_log(log_name, f'y: {y}')
+            outputs = self.model(x) 
+            # logger.write_log(log_name, f'output : {outputs}') 
             count_a_sample=0
-            total_posi = 0
-            for index in range(len(outputs)):
-                for h_index in range(0,self.model.grid_shape):
-                    for w_index in range(0,self.model.grid_shape):
-                        if  y[index,:,h_index,w_index] == 1: 
-                            total_posi+=1
-                            loss += 0.001*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
-                            logger.write_log(log_name, f'1 Loss: {5*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]):.4f}')
-                        else:
-                            loss += 0.0001*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
-                        _, predicted = torch.max(outputs[index,:,h_index,w_index].unsqueeze(0), 1)
-                        print(predicted)
-                        if y[index,:,h_index,w_index] == predicted and y[index,:,h_index,w_index] == 1:
-                            count_a_sample+=1
-            loss/=total_posi
-            logger.write_log(log_name, f'Train Loss: {loss:.4f}')
-            one_train_acc += count_a_sample / total_posi# 单个样本准确率
-            logger.write_log(log_name, f'one_train_acc: {one_train_acc:.4f}')
-            loss.backward()
-            print(total_posi)
-            self.optimizer.step()
+            total_posi = 0 
+            for index in range(len(outputs)): 
+                for h_index in range(0,self.model.grid_shape):  
+                    for w_index in range(0,self.model.grid_shape):    
+                        if  y[index,:,h_index,w_index] == 1:    
+                                        total_posi+=1    
+                                        loss += 0.001*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
+                                        logger.write_log(log_name, f'1 Loss: {5*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]):.4f}')  
+                        else:     
+                                loss += 0.0001*self.loss_fn(outputs[index,:,h_index,w_index].unsqueeze(0), y[index,:,h_index,w_index]) 
+                        _, predicted = torch.max(outputs[index,:,h_index,w_index].unsqueeze(0), 1) 
+                        if y[index,:,h_index,w_index] == predicted and y[index,:,h_index,w_index] == 1:     
+                                count_a_sample+=1 
+            loss/=total_posi 
+            logger.write_log(log_name, f'Train Loss: {loss:.4f}') 
+            one_train_acc = count_a_sample / total_posi# 单个样本准确率 
+            logger.write_log(log_name, f'one_train_acc: {one_train_acc:.4f}') 
+            logger.write_log(log_name, f'total_posi: {total_posi}') 
+            logger.write_log(log_name, f'count_a_sample: {count_a_sample}') 
+            loss.backward() 
+            self.optimizer.step() 
             self.optimizer.zero_grad()
     def validate(self):
         self.model.eval()
