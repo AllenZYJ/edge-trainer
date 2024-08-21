@@ -12,17 +12,14 @@ transform = transforms.Compose([
     transforms.Resize((64, 64)),  # 调整图像大小
     transforms.ToTensor(),        # 转换为Tensor
 ])
-# 加载数据集
 train_dataset = ImageFolder(root='./datasets/simple_dataset/train', transform=transform)
 val_dataset = ImageFolder(root='./datasets/simple_dataset/val', transform=transform)
-
-train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=1, shuffle=False)
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
 # 初始化模型
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-# device = torch.device("cpu")
 model = SimpleStableDiffusionModel().to(device)
-# 手动为模型添加 device 属性
 model.device = device
-# 开始训练
-sd_trainer(model, train_loader, epochs=5, lr=1e-4)
+sd_trainer(model, train_loader, epochs=10, lr=1e-4)
+# # 假设模型训练结束
+torch.save(model.state_dict(), "stable_diffusion_model.pth")

@@ -1,2 +1,4 @@
 datasets/simple_dataset/
 *.pyc
+stable_diffusion_model.pth
+generated_image.png

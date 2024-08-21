@@ -1,16 +1,17 @@
 from torch.optim import Adam
 import torch
 import torch.nn.functional as F
+
 # 定义损失函数
 def compute_loss(noise_pred, noise):
     return F.mse_loss(noise_pred, noise)
+
 # 训练函数
 def sd_trainer(model, dataloader, epochs, lr):
     optimizer = Adam(model.parameters(), lr=lr)
     model.train()
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    # device = torch.device("cpu")
+    device = torch.device("cuda:0")
     model.to(device)
     
     for epoch in range(epochs):
@@ -18,12 +19,14 @@ def sd_trainer(model, dataloader, epochs, lr):
             pixel_values, _ = batch
             pixel_values = pixel_values.to(device)
             
-            input_ids = model.tokenizer("A simple shape", return_tensors="pt").input_ids
+            # 创建一个 batch 的文本输入
+            batch_size = pixel_values.shape[0]
+            input_ids = model.tokenizer(["A simple shape"] * batch_size, return_tensors="pt", padding=True, truncation=True).input_ids
             input_ids = input_ids.to(device)
-            
+
             optimizer.zero_grad()
 
-            noise_pred, noise = model(input_ids, pixel_values)
+            noise_pred, noise,_,__ = model(input_ids, pixel_values)
 
             # 打印输出的形状
             print(f"noise_pred.shape: {noise_pred.shape}")
