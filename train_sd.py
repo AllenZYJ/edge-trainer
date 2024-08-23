@@ -20,6 +20,6 @@ val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = SimpleStableDiffusionModel().to(device)
 model.device = device
-sd_trainer(model, train_loader, epochs=10, lr=1e-4)
+sd_trainer(model, train_loader, epochs=100, lr=1e-4)
 # # 假设模型训练结束
 torch.save(model.state_dict(), "stable_diffusion_model.pth")

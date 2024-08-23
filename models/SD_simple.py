@@ -27,10 +27,7 @@ class SimpleStableDiffusionModel(nn.Module):
         noise = torch.randn_like(latents)
         timesteps = torch.randint(0, self.scheduler.config.num_train_timesteps, (latents.shape[0],), device=latents.device)
         noisy_latents = self.scheduler.add_noise(latents, noise, timesteps)
-        print("input_ids:",input_ids)
         # 使用UNet进行噪声预测
-        print(noisy_latents.shape)
-        print(text_embeddings.shape)
         noise_pred = self.unet(noisy_latents, timesteps, text_embeddings).sample
         return noise_pred, noise,timesteps, latents
     def inference_and_save(self,model, text, save_path):

@@ -29,12 +29,9 @@ def sd_trainer(model, dataloader, epochs, lr):
             noise_pred, noise,_,__ = model(input_ids, pixel_values)
 
             # 打印输出的形状
-            print(f"noise_pred.shape: {noise_pred.shape}")
-            print(f"noise.shape: {noise.shape}")
             
             # 计算损失
             loss = compute_loss(noise_pred, noise).to(device)
-            print(f"loss: {loss.item()}")
 
             if torch.isnan(loss) or torch.isinf(loss):
                 print("Encountered NaN or Inf in loss, skipping backward pass.")

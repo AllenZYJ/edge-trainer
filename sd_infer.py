@@ -14,6 +14,6 @@ if __name__ == "__main__":
     model.to(device)
     model.eval()  # 切换到评估模式
     model = SimpleStableDiffusionModel()
-    text = "A box."
+    text = "A circle."
     save_path = "generated_image.png"
     model.inference_and_save(model, text, save_path)
